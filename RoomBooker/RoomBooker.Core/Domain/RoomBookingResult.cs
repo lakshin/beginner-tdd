@@ -2,10 +2,7 @@
 
 namespace RoomBooker.Core.Domain
 {
-	public class RoomBookingResult
+	public class RoomBookingResult : RoomBookingBase
 	{
-		public string Name { get; set; }
-		public string Email { get; set; }
-		public DateTime Date { get; set; }
 	}
 }
