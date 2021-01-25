@@ -9,7 +9,7 @@ namespace RoomBooker.Core.Processor
 	[TestClass]
 	public class RoomBookingRequestProcessorTests
 	{
-		private readonly RoomBookingRequestProcessor _processor;
+		private RoomBookingRequestProcessor _processor;
 
 		[TestInitialize]
 		public void before_each()
