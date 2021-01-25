@@ -1,0 +1,11 @@
+﻿using System;
+
+namespace RoomBooker.Core.Domain
+{
+	public class RoomBookingResult
+	{
+		public string Name { get; set; }
+		public string Email { get; set; }
+		public DateTime Date { get; set; }
+	}
+}
