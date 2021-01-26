@@ -12,11 +12,13 @@ namespace RoomBooker.Core.Processor
 	public class RoomBookingRequestProcessorTests
 	{
 		private RoomBookingRequest _request;
+		private List<Room> _availableRooms;
 		private Mock<IRoomBookingRespository> _roomBookingRepositoryMock;
+		private Mock<IRoomRepository> _roomRepositoryMock;
 		private RoomBookingRequestProcessor _processor;
 
 		[TestInitialize]
-		public void before_each()
+		public void Before_each()
 		{
 			_request = new RoomBookingRequest
 			{
@@ -25,9 +27,14 @@ namespace RoomBooker.Core.Processor
 				Date = new DateTime(2021, 01, 26)
 			};
 
-			_roomBookingRepositoryMock = new Mock<IRoomBookingRespository>();
+			_availableRooms = new List<Room> { new Room() };
 
-			_processor = new RoomBookingRequestProcessor(_roomBookingRepositoryMock.Object);
+			_roomBookingRepositoryMock = new Mock<IRoomBookingRespository>();
+			_roomRepositoryMock = new Mock<IRoomRepository>();
+
+			_roomRepositoryMock.Setup(x => x.GetAvailableRooms(_request.Date)).Returns(_availableRooms);
+
+			_processor = new RoomBookingRequestProcessor(_roomBookingRepositoryMock.Object, _roomRepositoryMock.Object);
 		}
 
 		[TestMethod]
@@ -81,6 +88,20 @@ namespace RoomBooker.Core.Processor
 			Assert.AreEqual(_request.Name, savedRoomBooking.Name);
 			Assert.AreEqual(_request.Email, savedRoomBooking.Email);
 			Assert.AreEqual(_request.Date, savedRoomBooking.Date);
+		}
+
+		[TestMethod]
+		public void BookRoom_OnExecute_ShouldNotSaveRoomBookingIfNoRoomAvailable()
+		{
+			//Arrange
+			//Ensure that no room available before calling
+			_availableRooms.Clear();
+
+			//Act
+			_processor.BookRoom(_request);
+
+			//Assert
+			_roomBookingRepositoryMock.Verify(x => x.Save(It.IsAny<RoomBooking>()), Times.Never);
 		}
 	}
 }

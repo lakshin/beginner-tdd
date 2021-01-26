@@ -7,17 +7,24 @@ namespace RoomBooker.Core.Processor
 	public class RoomBookingRequestProcessor
 	{
 		private IRoomBookingRespository _roomBookingRepository;
+		private IRoomRepository _roomRepository;
 
-		public RoomBookingRequestProcessor(IRoomBookingRespository roomBookingRepository)
+		public RoomBookingRequestProcessor(IRoomBookingRespository roomBookingRepository, IRoomRepository roomRepository)
 		{
 			this._roomBookingRepository = roomBookingRepository;
+			this._roomRepository = roomRepository;
 		}
 
 		public RoomBookingResult BookRoom(RoomBookingRequest request)
 		{
 			if (request == null) throw new ArgumentNullException(nameof(request));
 
-			this._roomBookingRepository.Save(this.CreateRoomBooking<RoomBooking>(request));
+			var availableRooms = _roomRepository.GetAvailableRooms(request.Date);
+
+			if (availableRooms.Count > 0)
+			{
+				this._roomBookingRepository.Save(this.CreateRoomBooking<RoomBooking>(request));
+			}
 
 			return CreateRoomBooking<RoomBookingResult>(request);
 		}
